@@ -105,23 +105,26 @@
         }
 
         /* Tamanho das colunas */
-        td:nth-child(1) { /* Cover */
+        td:nth-child(1) { /* ID */
+            width: 1%;
+        }
+        td:nth-child(2) { /* Cover */
             width: 1%;
         }
 
-        td:nth-child(2) { /* Quote */
+        td:nth-child(3) { /* Quote */
             width: 45%;
         }
 
-        td:nth-child(3) { /* Book */
+        td:nth-child(4) { /* Book */
             width: 10%;
         }
 
-        td:nth-child(4) { /* Author */
+        td:nth-child(5) { /* Author */
             width: 10%;
         }
 
-        td:nth-child(5) { /* Coluna Notes */
+        td:nth-child(6) { /* Coluna Notes */
             vertical-align: top; /* Alinha o conteúdo ao topo */
             word-wrap: break-word; /* Quebra palavras longas */
             overflow: visible; /* Mostra todo o conteúdo */
@@ -235,6 +238,43 @@
         .gallery-item a:hover {
             color: #4CAF50;
         }
+
+        /* Container da citação */
+        .quote-container {
+            position: relative;
+            padding: 10px;
+        }
+
+        /* Botão de compartilhamento */
+        .share-buttons {
+    margin-top: 5px;
+    display: flex;
+    gap: 5px;
+    justify-content: flex-end; /* Alinha os botões à direita */
+    align-items: center;
+}
+
+.share-buttons button,
+.share-buttons a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 5px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    background: none; /* Remove a cor de fundo */
+    color: inherit; /* Herda a cor do texto da célula */
+}
+
+.share-buttons button:hover,
+.share-buttons a:hover {
+    opacity: 0.7;
+}
+
     </style>
 </head>
 <body>
@@ -269,6 +309,7 @@
     <div id="table-view">
         <table>
             <tr>
+               <th>ID</th>
                 <th>Cover</th>
                 <th>Quote</th>
                 <th>Book</th>
@@ -277,6 +318,7 @@
             </tr>
             {% for quote in quotes %}
             <tr data-type="{{ quote.type }}">
+                <td>{{ quote.book.id }}</td>
                 <td>
                     {% if quote.book.cover %}
                         <img src="{{ quote.book.cover }}" alt="Cover" width="50">
@@ -284,7 +326,19 @@
                         No Cover
                     {% endif %}
                 </td>
-                <td>{{ quote.text }}</td>
+               <td>
+                <div class="quote-container">
+                    <p>{{ quote.text }}</p>
+                    <div class="share-buttons">
+                        <button onclick="copyQuote('{{ quote.text }}', '{{ quote.book.title }}', '{{ quote.book.author }}')">🗐</button>
+                        <a href="https://twitter.com/intent/tweet?text={{ quote.text }}%20-%20{{ quote.book.title }}%20by%20{{ quote.book.author }}" target="_blank">
+                            𝕏
+                        </a>
+                    </div>
+                </div>
+            </td>
+
+
                 <td>{{ quote.book.title }}</td>
                 <td>{{ quote.book.author }}</td>
                 <td>
@@ -403,6 +457,40 @@ function clearNote(button, quoteId) {
         alert('❌ Erro inesperado ao excluir a nota.');
     });
 }
+
+// Share button
+function shareQuote(text, title, author) {
+    const shareText = `"${text}" - ${title} by ${author}`;
+
+    if (navigator.share) {
+        navigator.share({
+            title: title,
+            text: shareText,
+        })
+        .then(() => console.log('Quote shared successfully!'))
+        .catch((error) => {
+            console.warn('Share failed, falling back to clipboard:', error);
+            copyToClipboard(shareText);
+        });
+    } else {
+        copyToClipboard(shareText);
+    }
+}
+
+// Função para copiar texto para a área de transferência
+function copyQuote(text, title, author) {
+    const shareText = `"${text}" - ${title} by ${author}`;
+    navigator.clipboard.writeText(shareText)
+        .then(() => {
+            alert('✅ Quote copied to clipboard! You can paste it anywhere.');
+        })
+        .catch((error) => {
+            console.error('❌ Error copying to clipboard:', error);
+            alert('❌ Failed to copy quote. Please try manually.');
+        });
+}
+
+
 
 
 

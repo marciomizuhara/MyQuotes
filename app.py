@@ -30,15 +30,17 @@ def random_quotes():
 def all_quotes():
     search_query = request.args.get('search')
     books = Book.query.all()  # Carrega todos os livros para a galeria
+
     if search_query:
         quotes = Quote.query.join(Book).filter(
             (Quote.text.contains(search_query)) |
             (Book.title.contains(search_query)) |
-            (Book.author.contains(search_query))|
+            (Book.author.contains(search_query)) |
             (Quote.notes.contains(search_query))
-        ).all()
+        ).order_by(Quote.id.desc()).all()
     else:
-        quotes = Quote.query.all()
+        quotes = Quote.query.order_by(Quote.id.desc()).all()
+
     return render_template('index.html', quotes=quotes, books=books)
 
 

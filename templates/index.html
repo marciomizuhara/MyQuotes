@@ -130,6 +130,10 @@
             overflow: visible; /* Mostra todo o conteúdo */
         }
 
+        td:nth-child(7) { /* Share */
+            width: 1%;
+        }
+
         /* Caixa de texto ajustável */
         .note-input {
             width: 100%;
@@ -246,34 +250,45 @@
         }
 
         /* Botão de compartilhamento */
+        /* Célula Share */
+        td.share-cell {
+            display: flex;
+            align-items: flex-end; /* Alinha os itens na parte inferior */
+            justify-content: center; /* Centraliza horizontalmente */
+            height: 100%;
+            box-sizing: border-box;
+            padding: 5px;
+        }
+
+        /* Container dos botões */
         .share-buttons {
-    margin-top: 5px;
-    display: flex;
-    gap: 5px;
-    justify-content: flex-end; /* Alinha os botões à direita */
-    align-items: center;
-}
+            display: flex;
+            flex-direction: row; /* Alinha os botões lado a lado */
+            gap: 5px; /* Espaço entre os botões */
+            align-items: flex-end; /* Alinha os botões na parte inferior */
+            margin-top: auto; /* Garante que o container empurre para o fundo */
+        }
 
-.share-buttons button,
-.share-buttons a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    padding: 5px;
-    font-size: 14px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
-    background: none; /* Remove a cor de fundo */
-    color: inherit; /* Herda a cor do texto da célula */
-}
+        /* Botões individuais */
+        .share-buttons button,
+        .share-buttons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none; /* Remove sublinhado do link */
+            font-size: 14px;
+            border: none;
+            background: none; /* Sem fundo para manter a cor da linha */
+            cursor: pointer;
+        }
 
-.share-buttons button:hover,
-.share-buttons a:hover {
-    opacity: 0.7;
-}
+        /* Efeito hover para os botões */
+        .share-buttons button:hover,
+        .share-buttons a:hover {
+            opacity: 0.7;
+        }
+
+
 
     </style>
 </head>
@@ -315,10 +330,11 @@
                 <th>Book</th>
                 <th>Author</th>
                 <th>Notes</th>
+                <th>Share</th>
             </tr>
             {% for quote in quotes %}
             <tr data-type="{{ quote.type }}">
-                <td>{{ quote.book.id }}</td>
+                <td>{{ quote.id }}</td>
                 <td>
                     {% if quote.book.cover %}
                         <img src="{{ quote.book.cover }}" alt="Cover" width="50">
@@ -327,18 +343,8 @@
                     {% endif %}
                 </td>
                <td>
-                <div class="quote-container">
-                    <p>{{ quote.text }}</p>
-                    <div class="share-buttons">
-                        <button onclick="copyQuote('{{ quote.text }}', '{{ quote.book.title }}', '{{ quote.book.author }}')">🗐</button>
-                        <a href="https://twitter.com/intent/tweet?text={{ quote.text }}%20-%20{{ quote.book.title }}%20by%20{{ quote.book.author }}" target="_blank">
-                            𝕏
-                        </a>
-                    </div>
-                </div>
+                {{ quote.text }}
             </td>
-
-
                 <td>{{ quote.book.title }}</td>
                 <td>{{ quote.book.author }}</td>
                 <td>
@@ -347,6 +353,14 @@
                         <button onclick="editNote(this)">✏️</button>
                         <button onclick="saveNote(this, {{ quote.id }})">✅</button>
                         <button onclick="clearNote(this, {{ quote.id }})">❌</button>
+                    </div>
+                </td>
+                <td>
+                    <div class="share-buttons">
+                        <button onclick="copyQuote('{{ quote.text }}', '{{ quote.book.title }}', '{{ quote.book.author }}')">🗐</button>
+                        <a href="https://twitter.com/intent/tweet?text={{ quote.text }}%20-%20{{ quote.book.title }}%20by%20{{ quote.book.author }}" target="_blank">
+                            𝕏
+                        </a>
                     </div>
                 </td>
 

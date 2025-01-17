@@ -81,6 +81,24 @@
             opacity: 0.8;
         }
 
+        .filter-buttons .reset-filter {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 15px;
+            height: 15px;
+            border: 2px solid #ccc; /* Cor da borda */
+            border-radius: 50%;
+            background-color: transparent; /* Fundo transparente */
+            cursor: pointer;
+        }
+
+        .filter-buttons .reset-filter:hover {
+            border-color: #888; /* Cor da borda ao passar o mouse */
+            background-color: rgba(0, 0, 0, 0.1); /* Leve sombra no hover */
+        }
+
+
         /* Tabela */
         #table-view {
             display: table;
@@ -218,6 +236,13 @@
             transition: transform 0.2s;
         }
 
+        .gallery-item p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+
         .gallery-item:hover {
             transform: scale(1.05);
         }
@@ -309,6 +334,8 @@
             <a href="javascript:void(0);" onclick="filterByType(1)" class="red"></a>
             <a href="javascript:void(0);" onclick="filterByType(4)" class="blue"></a>
             <a href="javascript:void(0);" onclick="filterByType(2)" class="yellow"></a>
+            <a href="javascript:void(0);" onclick="resetFilters()" class="reset-filter"></a>
+
         </div>
 
 
@@ -370,17 +397,19 @@
     </div>
 
     <!-- Galeria de Livros -->
-    <div id="gallery-view">
-        {% for book in books %}
-        <div class="gallery-item">
-            <a href="/all?search={{ book.title }}">
-                <img src="{{ book.cover }}" alt="{{ book.title }}">
-                <h3>{{ book.title }}</h3>
-                <p>{{ book.author }}</p>
-            </a>
-        </div>
-        {% endfor %}
+<div id="gallery-view">
+    {% for book, quote_count in books %}
+    <div class="gallery-item">
+        <a href="/all?search={{ book.title }}">
+            <img src="{{ book.cover }}" alt="{{ book.title }}">
+            <h3>{{ book.title }}</h3>
+            <p>{{ book.author }}</p>
+            <p><strong>{{ quote_count }}</strong> quotes</p>
+        </a>
     </div>
+    {% endfor %}
+</div>
+
 
 <script>
     function filterByType(typeId) {
@@ -391,6 +420,22 @@
     // Mantém os outros parâmetros (search, view, etc.) intactos
     window.location.href = `/type/${typeId}?${params.toString()}`;
 }
+
+
+function resetFilters() {
+    // Obter a URL atual e seus parâmetros
+    const currentUrl = new URL(window.location.href);
+
+    // Remover o parâmetro 'type'
+    currentUrl.searchParams.delete('type');
+
+    // Ajustar o caminho da URL para "all"
+    currentUrl.pathname = '/all';
+
+    // Redirecionar para a URL ajustada
+    window.location.href = currentUrl.toString();
+}
+
 
 // Garante que a visualização em galeria funciona corretamente
 function toggleView() {

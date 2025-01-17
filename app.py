@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
+from sqlalchemy import desc
+
 from models import db, Book, Quote
 from sqlalchemy.sql.expression import func
 from sqlalchemy.sql import text
@@ -29,7 +31,10 @@ def random_quotes():
 @app.route('/all')
 def all_quotes():
     search_query = request.args.get('search')
-    books = Book.query.all()  # Carrega todos os livros para a galeria
+    books = db.session.query(
+        Book,
+        func.count(Quote.id).label('quote_count')
+    ).join(Quote, Book.id == Quote.book_id, isouter=True).group_by(Book.id).all()
 
     if search_query:
         quotes = Quote.query.join(Book).filter(
@@ -37,9 +42,9 @@ def all_quotes():
             (Book.title.contains(search_query)) |
             (Book.author.contains(search_query)) |
             (Quote.notes.contains(search_query))
-        ).order_by(Quote.id.desc()).all()
+        ).order_by(desc(Quote.id)).all()  # Ordenação em ordem decrescente
     else:
-        quotes = Quote.query.order_by(Quote.id.desc()).all()
+        quotes = Quote.query.order_by(desc(Quote.id)).all()  # Ordenação em ordem decrescente
 
     return render_template('index.html', quotes=quotes, books=books)
 
@@ -59,7 +64,12 @@ def filter_by_type(type_id):
 
     # Base query com filtro por tipo
     quotes = Quote.query.filter_by(type=type_id)
-    books = Book.query.all()
+
+    # Consulta para obter os livros com contagem de citações
+    books = db.session.query(
+        Book,
+        func.count(Quote.id).label('quote_count')
+    ).join(Quote).filter(Quote.type == type_id).group_by(Book.id).all()
 
     # Aplicar busca, se existir
     if search_query:

@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from sqlalchemy import desc
 
-from models import db, Book, Quote
+from models import db, Book, Quote, Character
 from sqlalchemy.sql.expression import func
 from sqlalchemy.sql import text
 import os
@@ -47,6 +47,40 @@ def all_quotes():
         quotes = Quote.query.order_by(desc(Quote.id)).all()  # Ordenação em ordem decrescente
 
     return render_template('index.html', quotes=quotes, books=books)
+
+@app.route('/details')
+def book_details():
+    search_query = request.args.get('search', '')
+
+    # Base query para buscar livros com resumo, rating e personagens
+    query = db.session.query(
+        Book.id,
+        Book.title,
+        Book.author,
+        Book.cover,
+        Book.summary,
+        Book.rating,
+        func.group_concat(Character.name, ', ').label('characters')  # Concatena os nomes dos personagens
+    ).outerjoin(Character).group_by(Book.id)
+
+    if search_query:
+        query = query.filter(
+            (Book.title.contains(search_query)) |
+            (Book.author.contains(search_query)) |
+            (Book.summary.contains(search_query))
+        )
+
+    books = query.all()
+    return render_template('details.html', books=books)
+
+@app.route('/details/<int:book_id>')
+def book_detail_page(book_id):
+    """Exibe detalhes de um livro específico."""
+    book = Book.query.get_or_404(book_id)
+    characters = Character.query.filter_by(book_id=book_id).all()
+    return render_template('book_detail.html', book=book, characters=characters)
+
+
 
 
 @app.route('/gallery')

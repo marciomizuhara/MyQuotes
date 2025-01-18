@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ book.title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .book-container {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+
+        .book-cover {
+            flex: 0 0 auto;
+            max-width: 300px;
+        }
+
+        .book-cover img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .book-summary {
+            flex: 1;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .book-summary p {
+            margin: 0;
+        }
+
+        .characters-section {
+            margin-top: 30px;
+        }
+
+        .character {
+            margin-bottom: 15px;
+        }
+
+        .character strong {
+            font-weight: bold;
+        }
+
+        .character-description {
+            display: inline;
+        }
+        .character-list {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .character-list tr:nth-child(odd) {
+        background-color: #d3d3d3; /* Cinza claro */
+    }
+
+    .character-list tr:nth-child(even) {
+        background-color: #ffffff; /* Branco */
+    }
+
+    .character-list td {
+        padding: 10px;
+        vertical-align: top;
+    }
+
+    .character-list td:first-child {
+        font-weight: bold;
+    }
+    </style>
+</head>
+<body>
+
+    <!-- Título do Livro -->
+    <h1>{{ book.title }}</h1>
+    <div style="margin-bottom: 20px;">
+    <a href="{{ url_for('book_details') }}" style="text-decoration: none; color: white; background-color: #4CAF50; padding: 10px 15px; border-radius: 5px; font-weight: bold;">⬅ Voltar</a>
+</div>
+
+
+    <!-- Container do Livro -->
+    <div class="book-container">
+        <!-- Capa do Livro -->
+        <div class="book-cover">
+            <img src="{{ book.cover }}" alt="{{ book.title }}">
+        </div>
+
+        <!-- Resumo do Livro -->
+        <div class="book-summary">
+            <div class="book-summary">
+<div style="display: flex; align-items: center; margin-bottom: 20px;">
+    <div style="display: flex; font-size: 24px;"> <!-- Aumentando o tamanho das estrelas -->
+        {% for i in range(1, 6) %}
+            {% if book.rating >= i %}
+                <!-- Estrela cheia -->
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="gold" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                </svg>
+            {% elif book.rating + 0.5 >= i %}
+                <!-- Estrela meia -->
+                <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="halfGradient">
+                            <stop offset="50%" stop-color="gold" />
+                            <stop offset="50%" stop-color="lightgray" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="url(#halfGradient)"/>
+                </svg>
+            {% else %}
+                <!-- Estrela vazia -->
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="lightgray" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                </svg>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <span style="margin-left: 15px; font-size: 24px; font-weight: bold; color: #333;">
+        {{ book.rating or 'N/A' }} / 5
+    </span>
+</div>
+
+
+<div style="white-space: pre-wrap; font-style: italic; line-height: 1; margin: 0;">
+    {{ book.summary or 'No summary available.' }}
+</div>
+
+
+</div>
+
+        </div>
+    </div>
+
+    <!-- Seção de Personagens -->
+    <div class="characters-section">
+        <h2>Characters</h2>
+<table class="character-list">
+    {% for character in book.characters %}
+    <tr>
+        <td>{{ character.name }}</td>
+        <td>{{ character.description }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+    </div>
+
+</body>
+</html>

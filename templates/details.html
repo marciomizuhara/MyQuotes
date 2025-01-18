@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Quotes</title>
-    <style>
-        /* Estilização Geral */
+    <title>Details</title>
+    <style>/* Estilização Geral */
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
@@ -315,246 +314,87 @@
 
 
 
+
+
+
+
+        .gallery-item {
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+            max-width: 200px; /* Limita a largura do card */
+            margin: auto; /* Centraliza o card */
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            max-height: 250px; /* Limita a altura da imagem */
+            object-fit: cover; /* Ajusta o corte para cobrir o espaço */
+            border-radius: 5px;
+        }
+
+        .gallery-item h3, .gallery-item p {
+            margin: 10px 0;
+        }
+
+        .gallery-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center; /* Centraliza os itens no container */
+            margin-top: 20px;
+        }
+
+        .gallery-item a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .gallery-item a:hover {
+            color: #4CAF50;
+        }
     </style>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <h1>My Quotes</h1>
+    <h1>Book Details</h1>
 
-    <!-- Barra Superior -->
+    <!-- Botões e Filtros -->
     <div class="header">
         <div class="buttons">
             <a href="/">RANDOM QUOTES</a>
             <a href="/all">ALL QUOTES</a>
-            <button onclick="toggleView()">BOOKS</button>
+            <a href="/books">BOOKS</a>
             <a href="/details">DETAILS</a>
         </div>
 
-         <!-- Filtros por Tipo -->
-        <div class="filter-buttons">
-            <a href="javascript:void(0);" onclick="filterByType(3)" class="green"></a>
-            <a href="javascript:void(0);" onclick="filterByType(1)" class="red"></a>
-            <a href="javascript:void(0);" onclick="filterByType(4)" class="blue"></a>
-            <a href="javascript:void(0);" onclick="filterByType(2)" class="yellow"></a>
-            <a href="javascript:void(0);" onclick="resetFilters()" class="reset-filter"></a>
-
-        </div>
-
-
+        <!-- Barra de Busca -->
         <div class="search-bar">
-            <form method="GET" action="/all">
+            <form method="GET" action="/details">
                 <input type="text" name="search" placeholder="Search...">
                 <button type="submit">Search</button>
             </form>
         </div>
     </div>
 
-    <!-- Tabela de Quotes -->
-    <div id="table-view">
-        <table>
-            <tr>
-               <th>ID</th>
-                <th>Cover</th>
-                <th>Quote</th>
-                <th>Book</th>
-                <th>Author</th>
-                <th>Notes</th>
-                <th>Share</th>
-            </tr>
-            {% for quote in quotes %}
-            <tr data-type="{{ quote.type }}">
-                <td>{{ quote.id }}</td>
-                <td>
-                    {% if quote.book.cover %}
-                        <img src="{{ quote.book.cover }}" alt="Cover" width="50">
-                    {% else %}
-                        No Cover
-                    {% endif %}
-                </td>
-               <td>
-                {{ quote.text }}
-            </td>
-                <td>{{ quote.book.title }}</td>
-                <td>{{ quote.book.author }}</td>
-                <td>
-                    <textarea class="note-input" readonly>{{ quote.notes or '' }}</textarea>
-                    <div class="note-actions">
-                        <button onclick="editNote(this)">✏️</button>
-                        <button onclick="saveNote(this, {{ quote.id }})">✅</button>
-                        <button onclick="clearNote(this, {{ quote.id }})">❌</button>
-                    </div>
-                </td>
-                <td>
-                    <div class="share-buttons">
-                        <button onclick="copyQuote('{{ quote.text }}', '{{ quote.book.title }}', '{{ quote.book.author }}')">🗐</button>
-                        <a href="https://twitter.com/intent/tweet?text={{ quote.text }}%20-%20{{ quote.book.title }}%20by%20{{ quote.book.author }}" target="_blank">
-                            𝕏
-                        </a>
-                    </div>
-                </td>
-
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
-
     <!-- Galeria de Livros -->
-<div id="gallery-view">
-    {% for book, quote_count in books %}
-    <div class="gallery-item">
-        <a href="/all?search={{ book.title }}">
-            <img src="{{ book.cover }}" alt="{{ book.title }}">
-            <h3>{{ book.title }}</h3>
-            <p>{{ book.author }}</p>
-            <p><strong>{{ quote_count }}</strong> quotes</p>
-        </a>
+    <div class="gallery-container">
+        {% for book in books %}
+        <div class="gallery-item">
+            <a href="/details/{{ book.id }}">
+                <img src="{{ book.cover }}" alt="{{ book.title }}">
+                <h3>{{ book.title }}</h3>
+                <p><strong>Author:</strong> {{ book.author }}</p>
+            </a>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-</div>
-
-
-<script>
-    function filterByType(typeId) {
-    const params = new URLSearchParams(window.location.search);
-    params.delete('type'); // Remove o filtro anterior, se existir
-    params.set('type', typeId); // Adiciona o novo filtro
-
-    // Mantém os outros parâmetros (search, view, etc.) intactos
-    window.location.href = `/type/${typeId}?${params.toString()}`;
-}
-
-
-function resetFilters() {
-    // Obter a URL atual e seus parâmetros
-    const currentUrl = new URL(window.location.href);
-
-    // Remover o parâmetro 'type'
-    currentUrl.searchParams.delete('type');
-
-    // Ajustar o caminho da URL para "all"
-    currentUrl.pathname = '/all';
-
-    // Redirecionar para a URL ajustada
-    window.location.href = currentUrl.toString();
-}
-
-
-// Garante que a visualização em galeria funciona corretamente
-function toggleView() {
-    if (window.location.pathname === '/') {
-        window.location.href = '/all?view=gallery';
-    } else {
-        document.getElementById('table-view').style.display = 'none';
-        document.getElementById('gallery-view').style.display = 'grid';
-    }
-}
-
-// Aplica automaticamente a visualização correta na inicialização
-document.addEventListener('DOMContentLoaded', function () {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('view') === 'gallery') {
-        document.getElementById('table-view').style.display = 'none';
-        document.getElementById('gallery-view').style.display = 'grid';
-    }
-});
-
-
-// Salvar nota (V)
-function saveNote(button, quoteId) {
-    const row = button.closest('tr');
-    const noteTextarea = row.querySelector('textarea');
-    const newNote = noteTextarea.value.trim();
-
-    fetch('/update_note', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({quote_id: quoteId, note: newNote})
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            alert(`✅ ${data.message}`);
-            noteTextarea.setAttribute('readonly', 'readonly');
-        } else {
-            alert(`❌ Erro: ${data.message}`);
-        }
-    })
-    .catch(error => {
-        console.error('Erro:', error);
-        alert('❌ Erro inesperado ao salvar a nota.');
-    });
-}
-
-// Editar nota (✏️)
-function editNote(button) {
-    const row = button.closest('tr');
-    const noteTextarea = row.querySelector('textarea');
-    noteTextarea.removeAttribute('readonly');
-    noteTextarea.focus();
-}
-
-// Excluir nota (❌)
-function clearNote(button, quoteId) {
-    const row = button.closest('tr');
-    const noteTextarea = row.querySelector('textarea');
-    noteTextarea.value = '';
-
-    fetch('/update_note', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({quote_id: quoteId, note: ''})
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            alert(`✅ ${data.message}`);
-            noteTextarea.setAttribute('readonly', 'readonly');
-        } else {
-            alert(`❌ Erro: ${data.message}`);
-        }
-    })
-    .catch(error => {
-        console.error('Erro:', error);
-        alert('❌ Erro inesperado ao excluir a nota.');
-    });
-}
-
-// Share button
-function shareQuote(text, title, author) {
-    const shareText = `"${text}" - ${title} by ${author}`;
-
-    if (navigator.share) {
-        navigator.share({
-            title: title,
-            text: shareText,
-        })
-        .then(() => console.log('Quote shared successfully!'))
-        .catch((error) => {
-            console.warn('Share failed, falling back to clipboard:', error);
-            copyToClipboard(shareText);
-        });
-    } else {
-        copyToClipboard(shareText);
-    }
-}
-
-// Função para copiar texto para a área de transferência
-function copyQuote(text, title, author) {
-    const shareText = `"${text}" - ${title} by ${author}`;
-    navigator.clipboard.writeText(shareText)
-        .then(() => {
-            alert('✅ Quote copied to clipboard! You can paste it anywhere.');
-        })
-        .catch((error) => {
-            console.error('❌ Error copying to clipboard:', error);
-            alert('❌ Failed to copy quote. Please try manually.');
-        });
-}
-
-
-
-
-
-</script>
-
 </body>
 </html>

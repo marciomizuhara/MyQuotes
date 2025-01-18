@@ -255,9 +255,17 @@
         }
 
         .gallery-item h3 {
-            margin: 10px 0 0;
-            font-size: 14px;
-        }
+        font-size: 16px; /* Ajuste conforme necessário */
+        line-height: 1.2; /* Espaçamento entre linhas */
+        max-height: 2.4em; /* Altura máxima: 2 linhas */
+        overflow: hidden; /* Esconde o texto excedente */
+        display: -webkit-box; /* Define o container para o clamp */
+        -webkit-line-clamp: 2; /* Número máximo de linhas */
+        -webkit-box-orient: vertical; /* Orientação das linhas */
+        text-overflow: ellipsis; /* Adiciona reticências */
+        word-wrap: break-word; /* Quebra palavras longas */
+    }
+
 
         .gallery-item a {
             text-decoration: none;
@@ -267,6 +275,62 @@
         .gallery-item a:hover {
             color: #4CAF50;
         }
+
+        .rating-stars {
+    margin: 10px 0;
+}
+
+.rating-stars svg {
+    margin-right: 2px;
+}
+
+.rating-stars .rating-value {
+    margin-left: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #555;
+}
+
+
+
+
+.card-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centraliza os botões horizontalmente */
+    gap: 4px; /* Adiciona espaçamento vertical entre os botões */
+    margin-top: 10px; /* Espaço superior para os botões */
+}
+
+.card-buttons a {
+    text-decoration: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 5px;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.button-quotes {
+    background-color: #4CAF50; /* Verde */
+}
+
+.button-quotes:hover {
+    background-color: #45a049;
+}
+
+.button-details {
+    background-color: #008CBA; /* Azul */
+}
+
+.button-details:hover {
+    background-color: #007bb5;
+}
+
+
+
+
 
         /* Container da citação */
         .quote-container {
@@ -401,15 +465,59 @@
 <div id="gallery-view">
     {% for book, quote_count in books %}
     <div class="gallery-item">
-        <a href="/all?search={{ book.title }}">
-            <img src="{{ book.cover }}" alt="{{ book.title }}">
-            <h3>{{ book.title }}</h3>
-            <p>{{ book.author }}</p>
-            <p><strong>{{ quote_count }}</strong> quotes</p>
-        </a>
+        <!-- Capa do livro -->
+        <img src="{{ book.cover }}" alt="{{ book.title }}">
+
+        <!-- Estrelas de rating -->
+        <div class="rating-stars">
+    <div style="display: flex; align-items: center;">
+        <div style="display: flex;">
+            {% for i in range(1, 6) %}
+                {% if book.rating and book.rating >= i %}
+                    <!-- Estrela cheia -->
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="gold" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                    </svg>
+                {% elif book.rating and book.rating + 0.5 >= i %}
+                    <!-- Estrela meia -->
+                    <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="halfGradient">
+                                <stop offset="50%" stop-color="gold" />
+                                <stop offset="50%" stop-color="lightgray" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="url(#halfGradient)"/>
+                    </svg>
+                {% else %}
+                    <!-- Estrela vazia -->
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="lightgray" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                    </svg>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+
+
+        <!-- Informações do livro -->
+        <h3>{{ book.title }}</h3>
+        <p>{{ book.author }}</p>
+        <p><strong>{{ quote_count }}</strong> quotes</p>
+
+        <!-- Botões -->
+        <div class="card-buttons">
+            <a href="/all?search={{ book.title }}" class="button-quotes">QUOTES</a>
+            <a href="/details/{{ book.id }}" class="button-details">DETAILS</a>
+        </div>
     </div>
     {% endfor %}
 </div>
+
+
+
 
 
 <script>

@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from sqlalchemy import desc
 
-from models import db, Book, Quote, Character
+from models import db, Book, Quote, Character, fetch_books
 from sqlalchemy.sql.expression import func
 from sqlalchemy.sql import text
 import os
@@ -88,6 +88,38 @@ def gallery_view():
     """Exibe uma galeria com as capas dos livros."""
     books = Book.query.all()
     return render_template('gallery.html', books=books)
+
+
+@app.route('/book_gallery')
+def book_gallery():
+    books = fetch_books()  # Lista de tuplas (Book, quote_count)
+    return render_template('book_gallery.html', books=books)
+
+
+@app.route('/characters', methods=['GET'])
+def characters():
+    """Exibe uma lista aleatória de personagens, com suporte a busca."""
+    # Obtém o parâmetro de busca (search) da URL
+    search_query = request.args.get('search', '')
+
+    # Consulta base: relaciona personagens e livros
+    query = db.session.query(Character, Book).join(Book)
+
+    # Aplica filtro se houver um termo de busca
+    if search_query:
+        query = query.filter(
+            (Character.name.contains(search_query)) |  # Busca por nome
+            (Character.description.contains(search_query)) |  # Busca por descrição
+            (Character.tags.contains(search_query))  # Busca por tags
+        )
+
+    # Ordena os resultados de forma aleatória
+    characters = query.order_by(func.random()).all()
+
+    # Renderiza o template com os resultados
+    return render_template('characters.html', characters=characters)
+
+
 
 
 @app.route('/type/<int:type_id>')

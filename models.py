@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql.expression import func
 
 db = SQLAlchemy()
 
@@ -19,6 +20,8 @@ class Character(db.Model):
     name = db.Column(db.String, nullable=False)
     description = db.Column(db.Text, nullable=False)
     book_id = db.Column(db.Integer, db.ForeignKey('books.id'), nullable=False)
+    rating = db.Column(db.String, nullable=True, default=0)  # Permite inteiros ou floats, com valor padrão 0
+    tags = db.Column(db.String, nullable=True)  # Para armazenar as tags como uma string separada por vírgulas
 
 
 class Quote(db.Model):
@@ -29,3 +32,13 @@ class Quote(db.Model):
     text = db.Column(db.String(500), nullable=False)
     book_id = db.Column(db.Integer, db.ForeignKey('books.id'), nullable=False)
     notes = db.Column(db.Text)  # Novo campo para anotações
+
+# Função para buscar livros
+def fetch_books():
+    books_with_quotes = db.session.query(
+        Book,
+        func.count(Quote.id).label('quote_count')  # Conta as citações por livro
+    ).outerjoin(Quote, Book.id == Quote.book_id).group_by(Book.id).all()
+
+    return books_with_quotes
+

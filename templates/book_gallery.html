@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Gallery</title>
+    <style>
+        /* Inclua aqui todo o estilo que você criou no index */
+        /* Copie o CSS existente para garantir que a estilização seja mantida */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        /* Botões Principais */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .buttons a, .buttons button {
+            text-decoration: none;
+            color: white;
+            background-color: #4CAF50;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .buttons a:hover, .buttons button:hover {
+            background-color: #45a049;
+        }
+
+        /* Filtros por Tipo */
+        .filter-buttons {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            margin-left: 20px;
+        }
+
+        .filter-buttons a {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .filter-buttons .green {
+            background-color: #e6f9e6;
+        }
+
+        .filter-buttons .red {
+            background-color: #fde2e2;
+        }
+
+        .filter-buttons .blue {
+            background-color: #e2ecfd;
+        }
+
+        .filter-buttons .yellow {
+            background-color: #fff8bf;
+        }
+
+        .filter-buttons a:hover {
+            opacity: 0.8;
+        }
+
+        .filter-buttons .reset-filter {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 15px;
+            height: 15px;
+            border: 2px solid #ccc; /* Cor da borda */
+            border-radius: 50%;
+            background-color: transparent; /* Fundo transparente */
+            cursor: pointer;
+        }
+
+        .filter-buttons .reset-filter:hover {
+            border-color: #888; /* Cor da borda ao passar o mouse */
+            background-color: rgba(0, 0, 0, 0.1); /* Leve sombra no hover */
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        #gallery-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .gallery-item {
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .gallery-item h3 {
+            font-size: 16px;
+            line-height: 1.2;
+            max-height: 2.4em;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            text-overflow: ellipsis;
+            word-wrap: break-word;
+        }
+
+        .rating-stars {
+            margin: 10px 0;
+        }
+
+        .rating-stars svg {
+            margin-right: 2px;
+        }
+
+        .rating-stars .rating-value {
+            margin-left: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .card-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            margin-top: 10px;
+        }
+
+        .card-buttons a {
+            text-decoration: none;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 5px;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-quotes {
+            background-color: #4CAF50;
+        }
+
+        .button-quotes:hover {
+            background-color: #45a049;
+        }
+
+        .button-details {
+            background-color: #008CBA;
+        }
+
+        .button-details:hover {
+            background-color: #007bb5;
+        }
+    </style>
+</head>
+<body>
+    <h1>Book Gallery</h1>
+
+    <!-- Barra Superior -->
+    <div class="header">
+        <div class="buttons">
+            <a href="/">RANDOM QUOTES</a>
+            <a href="/all">ALL QUOTES</a>
+            <a href="/book_gallery">BOOKS</a>
+            <a href="/characters">CHARACTERS</a>
+            <!-- <a href="/details">DETAILS</a> -->
+        </div>
+
+         <!-- Filtros por Tipo -->
+        <div class="filter-buttons">
+            <a href="javascript:void(0);" onclick="filterByType(3)" class="green"></a>
+            <a href="javascript:void(0);" onclick="filterByType(1)" class="red"></a>
+            <a href="javascript:void(0);" onclick="filterByType(4)" class="blue"></a>
+            <a href="javascript:void(0);" onclick="filterByType(2)" class="yellow"></a>
+            <a href="javascript:void(0);" onclick="resetFilters()" class="reset-filter"></a>
+
+        </div>
+
+
+        <div class="search-bar">
+            <form method="GET" action="/all">
+                <input type="text" name="search" placeholder="Search...">
+                <button type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="gallery-view">
+    {% for book, quote_count in books %}
+    <div class="gallery-item">
+        <!-- Capa do livro -->
+        <img src="{{ book.cover }}" alt="{{ book.title }}">
+
+        <!-- Estrelas de avaliação -->
+        <div class="rating-stars">
+            <div style="display: flex; align-items: center;">
+                <div style="display: flex;">
+                    {% for i in range(1, 6) %}
+                        {% if book.rating and book.rating >= i %}
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="gold" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                            </svg>
+                        {% elif book.rating and book.rating + 0.5 >= i %}
+                            <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="halfGradient">
+                                        <stop offset="50%" stop-color="gold" />
+                                        <stop offset="50%" stop-color="lightgray" />
+                                    </linearGradient>
+                                </defs>
+                                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="url(#halfGradient)"/>
+                            </svg>
+                        {% else %}
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="lightgray" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                            </svg>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Título, autor e número de citações -->
+        <h3>{{ book.title }}</h3>
+        <p>{{ book.author }}</p>
+        <p><strong>{{ quote_count }}</strong> quotes</p>
+
+        <!-- Botões -->
+        <div class="card-buttons">
+            <a href="/all?search={{ book.title }}" class="button-quotes">QUOTES</a>
+            <a href="/details/{{ book.id }}" class="button-details">DETAILS</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+</body>
+</html>

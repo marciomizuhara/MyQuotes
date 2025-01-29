@@ -6,17 +6,17 @@
 
 ## 🖼️ Application Previews
 
+### Quotes Table
+![Quotes Table](static/images/Screenshot_383.png)
+
 ### Characters Page
-![Characters Page](static/images/Screenshot_386.png)
+![Characters Page](static/images/Screenshot_385.png)
 
 ### Book Gallery
-![Book Gallery](static/images/Screenshot_385.png)
-
-### Quotes Table
-![Quotes Table](static/images/Screenshot_384.png)
+![Book Gallery](static/images/Screenshot_384.png)
 
 ### Detailed Book View
-![Detailed Book View](static/images/Screenshot_383.png)
+![Detailed Book View](static/images/Screenshot_386.png)
 
 ---
 

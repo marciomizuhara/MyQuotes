@@ -98,9 +98,10 @@ def book_gallery():
 
 @app.route('/characters', methods=['GET'])
 def characters():
-    """Exibe uma lista aleatória de personagens, com suporte a busca."""
-    # Obtém o parâmetro de busca (search) da URL
+    """Exibe uma lista de personagens, com suporte a busca e ordenação."""
+    # Obtém o parâmetro de busca (search) e de ordenação (sort) da URL
     search_query = request.args.get('search', '')
+    sort_option = request.args.get('sort', '')
 
     # Consulta base: relaciona personagens e livros
     query = db.session.query(Character, Book).join(Book)
@@ -113,11 +114,18 @@ def characters():
             (Character.tags.contains(search_query))  # Busca por tags
         )
 
-    # Ordena os resultados de forma aleatória
-    characters = query.order_by(func.random()).all()
+    # Aplica ordenação com base no parâmetro 'sort'
+    if sort_option == 'rating_desc':
+        query = query.order_by(Character.rating.desc())  # Ordenação por rating decrescente
+    else:
+        query = query.order_by(func.random())  # Ordenação aleatória padrão
 
-    # Renderiza o template com os resultados
-    return render_template('characters.html', characters=characters)
+    # Busca os resultados
+    characters = query.all()
+
+    # Renderiza o template com os resultados e a opção de ordenação atual
+    return render_template('characters.html', characters=characters, sort=sort_option)
+
 
 
 

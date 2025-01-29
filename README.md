@@ -2,6 +2,24 @@
 
 **My Quotes** is a web-based application designed to manage, organize, and visualize Kindle Highlights efficiently.
 
+---
+
+## 🖼️ Application Previews
+
+### Characters Page
+![Characters Page](static/images/Screenshot_386.png)
+
+### Book Gallery
+![Book Gallery](static/images/Screenshot_385.png)
+
+### Quotes Table
+![Quotes Table](static/images/Screenshot_384.png)
+
+### Detailed Book View
+![Detailed Book View](static/images/Screenshot_383.png)
+
+---
+
 ## 🚀 Key Features
 
 - **Random Quotes:** Display random quotes from your collection.
@@ -38,49 +56,3 @@
    ```bash
    git clone https://github.com/marciomizuhara/MyQuotes.git
    cd your-repo
-   ```
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Set up the database:
-   ```bash
-   flask db init
-   flask db migrate
-   flask db upgrade
-   ```
-4. Run the application:
-   ```bash
-   flask run
-   ```
-5. Access the app at: `http://127.0.0.1:5001`
-
-## 📂 Project Structure
-```
-My Quotes/
-├── app.py          # Main application logic
-├── models.py       # Database models
-├── templates/      # HTML templates
-├── static/         # CSS, JavaScript, and assets
-├── import_excel.py # Kindle highlights importer
-└── README.md       # Project documentation
-```
-
-## 🌟 Future Improvements
-
-- User authentication and profiles.
-- Export quotes to PDF or Word.
-- Enhanced analytics and reporting.
-
-## 🤝 Contributing
-
-Feel free to open issues or submit pull requests. Contributions are welcome!
-
-## 📄 License
-
-This project is licensed under the **MIT License**.
-
----
-
-
-
